@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import './styles.css'
+import './themes.css'
 
 const QUADRANTS = [
   { id: 'urgent-important', eyebrow: 'DO FIRST', title: '着急且重要', description: '现在就该处理的关键事项', tone: 'coral' },
@@ -15,12 +16,42 @@ const seed = [
   { id: 4, text: '整理桌面上的文件', quadrant: 'neither', done: false },
 ]
 
+const localDate = () => {
+  const now = new Date()
+  return `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`
+}
+export const refreshDailyTasks = (tasks, today = localDate()) => tasks.map(task =>
+  task.daily && task.dailyDate !== today ? { ...task, done: false, dailyDate: today } : task
+)
+
 function App() {
   const [tasks, setTasks] = useState(() => {
-    try { return JSON.parse(localStorage.getItem('quadrant-tasks')) || seed } catch { return seed }
+    try { const saved = JSON.parse(localStorage.getItem('quadrant-tasks')); return refreshDailyTasks(Array.isArray(saved) ? saved : seed) } catch { return seed }
   })
   const [drafts, setDrafts] = useState({})
   const [dragging, setDragging] = useState(null)
+  const [theme, setTheme] = useState(() => {
+    try { return localStorage.getItem('quadrant-theme') === 'dark' ? 'dark' : 'light' } catch { return 'light' }
+  })
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme
+    localStorage.setItem('quadrant-theme', theme)
+  }, [theme])
+  useEffect(() => {
+    const refresh = () => setTasks(prev => {
+      const next = refreshDailyTasks(prev)
+      return next.some((task, index) => task !== prev[index]) ? next : prev
+    })
+    const timer = setInterval(refresh, 1000)
+    window.addEventListener('focus', refresh)
+    document.addEventListener('visibilitychange', refresh)
+    return () => {
+      clearInterval(timer)
+      window.removeEventListener('focus', refresh)
+      document.removeEventListener('visibilitychange', refresh)
+    }
+  }, [])
 
   useEffect(() => localStorage.setItem('quadrant-tasks', JSON.stringify(tasks)), [tasks])
   const completed = useMemo(() => tasks.filter(t => t.done).length, [tasks])
@@ -32,6 +63,7 @@ function App() {
     setDrafts(prev => ({ ...prev, [quadrant]: '' }))
   }
   const toggle = id => setTasks(prev => prev.map(t => t.id === id ? { ...t, done: !t.done } : t))
+  const toggleDaily = id => setTasks(prev => prev.map(t => t.id === id ? { ...t, daily: !t.daily, dailyDate: localDate() } : t))
   const remove = id => setTasks(prev => prev.filter(t => t.id !== id))
   const drop = quadrant => {
     if (dragging) setTasks(prev => prev.map(t => t.id === dragging ? { ...t, quadrant } : t))
@@ -41,19 +73,19 @@ function App() {
   return <main className="app-shell">
     <header className="topbar">
       <div className="brand"><span className="brand-mark">✦</span><div><h1>四象限</h1><p>把时间花在真正重要的事上</p></div></div>
-      <div className="summary"><span className="summary-dot" />{completed} / {tasks.length} 已完成</div>
+      <div className="header-actions"><div className="summary"><span className="summary-dot" />{completed} / {tasks.length} 已完成</div><button className="theme-toggle" onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')} aria-label={theme === 'light' ? '切换夜晚模式' : '切换白天模式'}>{theme === 'light' ? '☾ 夜晚' : '☀ 白天'}</button></div>
     </header>
     <section className="intro"><div><p className="kicker">YOUR FOCUS BOARD</p><h2>今天，先做最重要的事。</h2></div><div className="hint">拖动任务卡片<br /><span>重新安排优先级</span></div></section>
     <section className="board">
       {QUADRANTS.map(q => <article key={q.id} className={`quadrant ${q.tone} ${dragging ? 'is-droppable' : ''}`} onDragOver={e => e.preventDefault()} onDrop={() => drop(q.id)}>
         <div className="quadrant-head"><div><p className="eyebrow">{q.eyebrow}</p><h3>{q.title}</h3><p className="description">{q.description}</p></div><span className="count">{tasks.filter(t => t.quadrant === q.id && !t.done).length}</span></div>
         <div className="task-list">{tasks.filter(t => t.quadrant === q.id).map(task => <div key={task.id} className={`task ${task.done ? 'done' : ''}`} draggable onDragStart={() => setDragging(task.id)} onDragEnd={() => setDragging(null)}>
-          <button className="check" onClick={() => toggle(task.id)} aria-label="完成任务">{task.done ? '✓' : ''}</button><span className="task-text">{task.text}</span><button className="delete" onClick={() => remove(task.id)} aria-label="删除任务">×</button>
+          <button className="check" onClick={() => toggle(task.id)} aria-label={task.done ? '恢复未完成' : '完成任务'}>{task.done ? '✓' : ''}</button><span className="task-text">{task.text}</span><button className={`daily-toggle ${task.daily ? 'active' : ''}`} onClick={() => toggleDaily(task.id)} aria-pressed={!!task.daily} title="每日任务：第二天自动恢复未完成">↻ 每日</button><button className="delete" onClick={() => remove(task.id)} aria-label="删除任务">×</button>
         </div>)}</div>
         <div className="add-row"><input value={drafts[q.id] || ''} onChange={e => setDrafts(prev => ({ ...prev, [q.id]: e.target.value }))} onKeyDown={e => e.key === 'Enter' && addTask(q.id)} placeholder="添加一项任务..." /><button onClick={() => addTask(q.id)} aria-label="添加任务">＋</button></div>
       </article>)}
     </section>
-    <footer>所有任务自动保存在本地浏览器 <span>·</span> {new Date().getFullYear()} 四象限</footer>
+    <footer>点击任务的「↻ 每日」开启每日刷新 <span>·</span> 每天零点恢复未完成 <span>·</span> 自动保存在本地</footer>
   </main>
 }
 

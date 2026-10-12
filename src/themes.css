@@ -1,0 +1,31 @@
+.header-actions{display:flex;align-items:center;gap:18px}
+.theme-toggle{border:1px solid #d8dfe8;border-radius:9px;padding:8px 12px;background:#fff;color:#536174;font:inherit;font-size:12px;cursor:pointer}
+.coral .task{background:#fff0eb;border-color:#ecd4cb}
+.blue .task{background:#edf3ff;border-color:#cfdcf2}
+.amber .task{background:#fff6e5;border-color:#eadcba}
+.slate .task{background:#edf1f6;border-color:#d4dce6}
+.task.done .task-text{color:#788492}
+.task-text{overflow-wrap:anywhere;min-width:0}
+.daily-toggle{border:1px solid transparent;border-radius:6px;background:transparent;color:#687688;font:inherit;font-size:11px;padding:4px 6px;cursor:pointer;white-space:nowrap}
+.daily-toggle.active{background:#fff;border-color:#bcc9d7;color:#375a73}
+.delete{opacity:1;color:#788492}
+button:focus-visible,input:focus-visible{outline:2px solid #6a91d8;outline-offset:3px}
+:root[data-theme=dark]{color:#e4eaf2;background:#151b24;color-scheme:dark}
+[data-theme=dark] .quadrant{background:#202834;border-color:#35404e}
+[data-theme=dark] .quadrant.is-droppable{background:#263141;border-color:#637791}
+[data-theme=dark] .brand-mark{background:#e4eaf2;color:#202834}
+[data-theme=dark] .count{background:#323e4e;color:#c9d4e3}
+[data-theme=dark] .coral .task{background:#3c2e2e;border-color:#634344}
+[data-theme=dark] .blue .task{background:#28364e;border-color:#435879}
+[data-theme=dark] .amber .task{background:#3c3628;border-color:#62553c}
+[data-theme=dark] .slate .task{background:#303b49;border-color:#4a586b}
+[data-theme=dark] .task.done .task-text{color:#a5afbe}
+[data-theme=dark] .daily-toggle{color:#b5c2d5}
+[data-theme=dark] .daily-toggle.active{background:#435469;border-color:#71849d;color:#f0f5fc}
+[data-theme=dark] .add-row{border-color:#364353}
+[data-theme=dark] .add-row input{background:transparent;color:#e4eaf2}
+[data-theme=dark] .theme-toggle{background:#263141;border-color:#4b5b70;color:#d3ddeb}
+[data-theme=dark] .description,[data-theme=dark] .summary,[data-theme=dark] .brand p,[data-theme=dark] .hint,[data-theme=dark] footer{color:#a3afc0}
+[data-theme=dark] .check{border-color:#92a0b4!important;background:#202834!important}
+[data-theme=dark] .done .check{background:#399778!important;border-color:#399778!important}
+@media(max-width:700px){.header-actions{gap:8px}.summary{font-size:11px}.brand p{max-width:140px}.theme-toggle{padding:7px 9px}.task{gap:8px}footer{line-height:1.9}}
