@@ -1,4 +1,10 @@
 .header-actions{display:flex;align-items:center;gap:18px}
+.quadrant-actions{display:flex;align-items:center;align-self:flex-start;gap:10px}
+.clear-quadrant{font:inherit;font-size:11px;padding:5px 8px;border:1px solid #dde3eb;border-radius:6px;background:transparent;color:#718095;cursor:pointer;white-space:nowrap}
+.clear-quadrant:hover:not(:disabled){background:#fff0eb;border-color:#d6aa98;color:#814b36}
+.clear-quadrant:disabled{opacity:.4;cursor:default}
+[data-theme=dark] .clear-quadrant{border-color:#4b5b70;color:#b5c2d5}
+[data-theme=dark] .clear-quadrant:hover:not(:disabled){background:#563b36;border-color:#956b5e;color:#f3c6b5}
 .theme-toggle{border:1px solid #d8dfe8;border-radius:9px;padding:8px 12px;background:#fff;color:#536174;font:inherit;font-size:12px;cursor:pointer}
 .coral .task{background:#fff0eb;border-color:#ecd4cb}
 .blue .task{background:#edf3ff;border-color:#cfdcf2}

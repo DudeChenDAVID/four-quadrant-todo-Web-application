@@ -66,6 +66,7 @@ function App() {
   const toggle = id => setTasks(prev => prev.map(t => t.id === id ? { ...t, done: !t.done } : t))
   const toggleDaily = id => setTasks(prev => prev.map(t => t.id === id ? { ...t, daily: !t.daily, dailyDate: localDate() } : t))
   const remove = id => setTasks(prev => prev.filter(t => t.id !== id))
+  const clearQuadrant = quadrant => setTasks(prev => prev.filter(t => t.quadrant !== quadrant))
   const drop = quadrant => {
     if (dragging) setTasks(prev => prev.map(t => t.id === dragging ? { ...t, quadrant } : t))
     setDragging(null)
@@ -80,7 +81,7 @@ function App() {
     <DailyQuote />
     <section className="board">
       {QUADRANTS.map(q => <article key={q.id} className={`quadrant ${q.tone} ${dragging ? 'is-droppable' : ''}`} onDragOver={e => e.preventDefault()} onDrop={() => drop(q.id)}>
-        <div className="quadrant-head"><div><p className="eyebrow">{q.eyebrow}</p><h3>{q.title}</h3><p className="description">{q.description}</p></div><span className="count">{tasks.filter(t => t.quadrant === q.id && !t.done).length}</span></div>
+        <div className="quadrant-head"><div><p className="eyebrow">{q.eyebrow}</p><h3>{q.title}</h3><p className="description">{q.description}</p></div><div className="quadrant-actions"><span className="count">{tasks.filter(t => t.quadrant === q.id && !t.done).length}</span><button className="clear-quadrant" onClick={() => clearQuadrant(q.id)} disabled={!tasks.some(t => t.quadrant === q.id)} aria-label={`清空${q.title}的全部任务`} title="删除此象限的全部任务">清空</button></div></div>
         <div className="task-list">{tasks.filter(t => t.quadrant === q.id).map(task => <div key={task.id} className={`task ${task.done ? 'done' : ''}`} draggable onDragStart={() => setDragging(task.id)} onDragEnd={() => setDragging(null)}>
           <button className="check" onClick={() => toggle(task.id)} aria-label={task.done ? '恢复未完成' : '完成任务'}>{task.done ? '✓' : ''}</button><span className="task-text">{task.text}</span><button className={`daily-toggle ${task.daily ? 'active' : ''}`} onClick={() => toggleDaily(task.id)} aria-pressed={!!task.daily} title="每日任务：第二天自动恢复未完成">↻ 每日</button><button className="delete" onClick={() => remove(task.id)} aria-label="删除任务">×</button>
         </div>)}</div>
