@@ -24,15 +24,42 @@ export const quoteDay = () => {
 
 export default function DailyQuote() {
   const [day, setDay] = useState(quoteDay)
+  const [remoteQuote, setRemoteQuote] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const fetchQuote = async (currentDay) => {
+    const cacheKey = `daily-quote-${currentDay}`
+    try {
+      const cached = JSON.parse(localStorage.getItem(cacheKey))
+      if (cached?.text) { setRemoteQuote(cached); setLoading(false); return }
+    } catch {}
+    try {
+      const controller = new AbortController()
+      const timeout = setTimeout(() => controller.abort(), 6000)
+      const response = await fetch('https://v1.hitokoto.cn/?c=i&c=k&encode=json', { signal: controller.signal })
+      clearTimeout(timeout)
+      if (!response.ok) throw new Error(`HTTP ${response.status}`)
+      const data = await response.json()
+      const next = { text: data.hitokoto, source: data.from ? `${data.from_who ? `${data.from_who} ` : ''}${data.from}` : '一言' }
+      localStorage.setItem(cacheKey, JSON.stringify(next))
+      setRemoteQuote(next)
+    } catch {
+      setRemoteQuote(null)
+    } finally {
+      setLoading(false)
+    }
+  }
   useEffect(() => {
+    fetchQuote(day)
     const refresh = () => setDay(quoteDay())
     const timer = setInterval(refresh, 1000)
     window.addEventListener('focus', refresh)
     return () => { clearInterval(timer); window.removeEventListener('focus', refresh) }
-  }, [])
-  const [text, source] = quotes[day % quotes.length]
+  }, [day])
+  const [fallbackText, fallbackSource] = quotes[day % quotes.length]
+  const text = remoteQuote?.text || fallbackText
+  const source = remoteQuote?.source || fallbackSource
   return <aside className="daily-quote" aria-label="每日哲思">
-    <span className="quote-label">每日哲思</span>
+    <span className="quote-label">{loading ? '每日哲思 · 获取中' : remoteQuote ? '每日哲思 · 在线' : '每日哲思 · 离线'}</span>
     <blockquote><p>{text}</p><cite>— {source}</cite></blockquote>
   </aside>
 }
