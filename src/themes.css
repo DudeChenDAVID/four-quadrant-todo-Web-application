@@ -7,7 +7,12 @@
 .task.done .task-text{color:#788492}
 .task-text{overflow-wrap:anywhere;min-width:0}
 .daily-toggle{border:1px solid transparent;border-radius:6px;background:transparent;color:#687688;font:inherit;font-size:11px;padding:4px 6px;cursor:pointer;white-space:nowrap}
-.daily-toggle.active{background:#fff;border-color:#bcc9d7;color:#375a73}
+.coral{--daily-bg:#f7dcd2;--daily-border:#d6aa98;--daily-ink:#814b36}
+.blue{--daily-bg:#dbe7fc;--daily-border:#a3bce6;--daily-ink:#365d96}
+.amber{--daily-bg:#f3e5c3;--daily-border:#d0b57b;--daily-ink:#795d24}
+.slate{--daily-bg:#dce4ee;--daily-border:#a9b8cb;--daily-ink:#465d78}
+.daily-toggle.active{background:var(--daily-bg);border-color:var(--daily-border);color:var(--daily-ink);font-weight:600}
+.daily-toggle:hover{border-color:var(--daily-border);color:var(--daily-ink)}
 .delete{opacity:1;color:#788492}
 button:focus-visible,input:focus-visible{outline:2px solid #6a91d8;outline-offset:3px}
 :root[data-theme=dark]{color:#e4eaf2;background:#151b24;color-scheme:dark}
@@ -21,7 +26,11 @@ button:focus-visible,input:focus-visible{outline:2px solid #6a91d8;outline-offse
 [data-theme=dark] .slate .task{background:#303b49;border-color:#4a586b}
 [data-theme=dark] .task.done .task-text{color:#a5afbe}
 [data-theme=dark] .daily-toggle{color:#b5c2d5}
-[data-theme=dark] .daily-toggle.active{background:#435469;border-color:#71849d;color:#f0f5fc}
+[data-theme=dark] .coral{--daily-bg:#563b36;--daily-border:#956b5e;--daily-ink:#f3c6b5}
+[data-theme=dark] .blue{--daily-bg:#354b70;--daily-border:#6a88b8;--daily-ink:#c8dcff}
+[data-theme=dark] .amber{--daily-bg:#54482e;--daily-border:#958151;--daily-ink:#f4dfac}
+[data-theme=dark] .slate{--daily-bg:#435268;--daily-border:#7a8ca5;--daily-ink:#d4e0f0}
+[data-theme=dark] .daily-toggle.active{background:var(--daily-bg);border-color:var(--daily-border);color:var(--daily-ink)}
 [data-theme=dark] .add-row{border-color:#364353}
 [data-theme=dark] .add-row input{background:transparent;color:#e4eaf2}
 [data-theme=dark] .theme-toggle{background:#263141;border-color:#4b5b70;color:#d3ddeb}
@@ -29,3 +38,12 @@ button:focus-visible,input:focus-visible{outline:2px solid #6a91d8;outline-offse
 [data-theme=dark] .check{border-color:#92a0b4!important;background:#202834!important}
 [data-theme=dark] .done .check{background:#399778!important;border-color:#399778!important}
 @media(max-width:700px){.header-actions{gap:8px}.summary{font-size:11px}.brand p{max-width:140px}.theme-toggle{padding:7px 9px}.task{gap:8px}footer{line-height:1.9}}
+.daily-quote{display:flex;align-items:center;gap:24px;margin:0 0 24px;padding:18px 22px;border:1px solid #e1e7ed;border-radius:12px;background:#f0f3f6;color:#536174}
+.quote-label{font-size:11px;letter-spacing:.12em;white-space:nowrap;color:#788699}
+.daily-quote blockquote{margin:0;border-left:1px solid #d3dce6;padding-left:24px;display:flex;align-items:baseline;justify-content:space-between;gap:20px;flex:1}
+.daily-quote p{margin:0;font-size:15px;font-family:'Noto Serif SC','Songti SC',SimSun,serif;line-height:1.8}
+.daily-quote cite{font-style:normal;font-size:11px;color:#748296;line-height:1.8}
+[data-theme=dark] .daily-quote{background:#222c39;border-color:#394658;color:#d5deeb}
+[data-theme=dark] .daily-quote blockquote{border-color:#46556a}
+[data-theme=dark] .quote-label,[data-theme=dark] .daily-quote cite{color:#a7b6ca}
+@media(max-width:700px){.daily-quote{gap:12px;padding:16px}.daily-quote blockquote{display:block;padding-left:12px}.daily-quote p{font-size:14px}.daily-quote cite{display:block;margin-top:5px}}

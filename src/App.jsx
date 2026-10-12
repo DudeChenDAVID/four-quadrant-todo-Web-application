@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import './styles.css'
 import './themes.css'
+import DailyQuote from './DailyQuote.jsx'
 
 const QUADRANTS = [
   { id: 'urgent-important', eyebrow: 'DO FIRST', title: '着急且重要', description: '现在就该处理的关键事项', tone: 'coral' },
@@ -76,6 +77,7 @@ function App() {
       <div className="header-actions"><div className="summary"><span className="summary-dot" />{completed} / {tasks.length} 已完成</div><button className="theme-toggle" onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')} aria-label={theme === 'light' ? '切换夜晚模式' : '切换白天模式'}>{theme === 'light' ? '☾ 夜晚' : '☀ 白天'}</button></div>
     </header>
     <section className="intro"><div><p className="kicker">YOUR FOCUS BOARD</p><h2>今天，先做最重要的事。</h2></div><div className="hint">拖动任务卡片<br /><span>重新安排优先级</span></div></section>
+    <DailyQuote />
     <section className="board">
       {QUADRANTS.map(q => <article key={q.id} className={`quadrant ${q.tone} ${dragging ? 'is-droppable' : ''}`} onDragOver={e => e.preventDefault()} onDrop={() => drop(q.id)}>
         <div className="quadrant-head"><div><p className="eyebrow">{q.eyebrow}</p><h3>{q.title}</h3><p className="description">{q.description}</p></div><span className="count">{tasks.filter(t => t.quadrant === q.id && !t.done).length}</span></div>
