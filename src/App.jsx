@@ -49,6 +49,7 @@ function App() {
   const [dropTarget, setDropTarget] = useState(null)
   const [editing, setEditing] = useState(null)
   const [editText, setEditText] = useState('')
+  const [expandedTasks, setExpandedTasks] = useState({})
   const [theme, setTheme] = useState(() => {
     try { return localStorage.getItem('quadrant-theme') === 'dark' ? 'dark' : 'light' } catch { return 'light' }
   })
@@ -108,6 +109,15 @@ function App() {
         <div className="quadrant-head"><div><p className="eyebrow">{q.eyebrow}</p><h3>{q.title}</h3><p className="description">{q.description}</p></div><div className="quadrant-actions"><span className="count">{tasks.filter(t => t.quadrant === q.id && !t.done).length}</span><button className="clear-quadrant" onClick={() => clearQuadrant(q.id)} disabled={!tasks.some(t => t.quadrant === q.id)} aria-label={`清空${q.title}的全部任务`} title="删除此象限的全部任务">清空</button></div></div>
         <div className="task-list">{tasks.filter(t => t.quadrant === q.id).map(task => <div key={task.id} className={`task ${task.done ? 'done' : ''} ${dragging === task.id ? 'dragging' : ''} ${dropTarget?.id === task.id && dragging !== task.id ? `insert-${dropTarget.position}` : ''}`} draggable={editing !== task.id} onDragStart={e => { e.dataTransfer.setData('text/plain', String(task.id)); e.dataTransfer.effectAllowed = 'move'; setDragging(task.id) }} onDragEnd={() => { setDragging(null); setDropTarget(null) }} onDragOver={e => { e.preventDefault(); e.stopPropagation(); const rect = e.currentTarget.getBoundingClientRect(); setDropTarget({ quadrant: q.id, id: task.id, position: e.clientY < rect.top + rect.height / 2 ? 'before' : 'after' }) }} onDrop={e => { e.preventDefault(); e.stopPropagation(); drop(q.id, dropTarget) }}>
           <span className="drag-handle" title="拖动排序">⠿</span><button className="check" onClick={() => toggle(task.id)} aria-label={task.done ? '恢复未完成' : '完成任务'}>{task.done ? '✓' : ''}</button><div className="task-content">{editing === task.id ? <input className="task-editor" autoFocus value={editText} onChange={e => { setEditText(e.target.value); if (e.target.value.trim()) updateTask(task.id, { text: e.target.value }) }} onBlur={saveEdit} onKeyDown={e => { if (e.key === 'Enter' && !e.nativeEvent.isComposing) e.currentTarget.blur(); if (e.key === 'Escape') e.currentTarget.blur() }} aria-label="编辑任务文字" /> : <button className="task-text edit-trigger" onClick={() => { setEditing(task.id); setEditText(task.text) }} title="点击编辑">{task.text}</button>}<label className="due-date"><span>{task.dueDate ? '截止' : '无截止日期'}</span><input type="date" value={task.dueDate || ''} onChange={e => updateTask(task.id, { dueDate: e.target.value })} aria-label={`${task.text}的截止日期`} /></label></div><button className={`daily-toggle ${task.daily ? 'active' : ''}`} onClick={() => toggleDaily(task.id)} aria-pressed={!!task.daily} title="每日任务：第二天自动恢复未完成">↻ 每日</button><button className="delete" onClick={() => remove(task.id)} aria-label="删除任务">×</button>
+          <div className="task-details">
+            <button className="details-toggle" aria-expanded={!!expandedTasks[task.id]} aria-controls={`task-details-${task.id}`} onClick={() => setExpandedTasks(prev => ({ ...prev, [task.id]: !prev[task.id] }))}>
+              <span aria-hidden="true">{expandedTasks[task.id] ? '▾' : '▸'}</span> {expandedTasks[task.id] ? '收起详情' : '详情'}
+            </button>
+            {expandedTasks[task.id] && <div id={`task-details-${task.id}`} className="details-panel" onDragStart={e => e.stopPropagation()}>
+              <textarea draggable={false} value={task.details || ''} onChange={e => updateTask(task.id, { details: e.target.value })} placeholder="写下任务步骤、备注或补充说明…" aria-label={`${task.text}的详情`} />
+              <span className="details-saved">自动保存</span>
+            </div>}
+          </div>
         </div>)}</div>
         <div className="add-row"><input value={drafts[q.id] || ''} onChange={e => setDrafts(prev => ({ ...prev, [q.id]: e.target.value }))} onKeyDown={e => e.key === 'Enter' && addTask(q.id)} placeholder="添加一项任务..." /><button onClick={() => addTask(q.id)} aria-label="添加任务">＋</button></div>
       </article>)}
